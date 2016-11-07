@@ -1,0 +1,150 @@
+{
+  "red": [
+    {
+      "img":"player5.png",
+      "id": "red1",
+      "x": 300,
+      "y": 500
+    },
+    {
+      "img":"player5.png",
+      "id": "red2",
+        "x": 500,
+      "y": 300
+    },
+    {
+      "img":"player5.png",
+      "id": "red3",
+      "x": 500,
+      "y": 700
+    },
+    {
+      "img":"player5.png",
+      "id": "red4",
+        "x": 700,
+      "y": 100
+    },
+    {
+      "img":"player5.png",
+      "id": "red5",
+        "x": 700,
+      "y": 600
+    },
+    {
+      "img":"player5.png",
+      "id": "red6",
+        "x": 900,
+      "y": 400
+    },
+    {
+      "img":"player5.png",
+      "id": "red7",
+        "x": 1100,
+      "y": 700
+    },
+    {
+      "img":"player5.png",
+      "id": "red8",
+        "x": 1200,
+      "y": 100
+    },
+    {
+      "img":"player5.png",
+      "id": "red9",
+      "x": 1400,
+      "y": 800
+    },
+    {
+      "img":"player5.png",
+      "id": "red10",
+        "x": 3000,
+      "y": 200
+    },
+    {
+      "img":"player5.png",
+      "id": "red11",
+        "x": 400,
+      "y": 200
+    },
+    {
+      "img":"target2.png",
+      "id":"target",
+      "x":100,
+      "y":450
+    }
+  ],
+  "blue": [
+    {
+      "img":"player4.png",
+      "id": "blue1",
+        "x": 1500,
+      "y": 500
+    },
+    {
+      "img":"player4.png",
+      "id": "blue2",
+        "x": 1300,
+      "y": 300
+    },
+    {
+      "img":"player4.png",
+      "id": "blue3",
+        "x": 1300,
+      "y": 700
+    },
+    {
+      "img":"player4.png",
+      "id": "blue4",
+      "x": 1100,
+      "y": 100
+    },
+    {
+      "img":"player4.png",
+      "id": "blue5",
+        "x": 1100,
+      "y": 900
+    },
+    {
+      "img":"player4.png",
+      "id": "blue6",
+        "x": 1000,
+      "y": 400
+    },
+    {
+      "img":"player4.png",
+      "id": "blue7",
+        "x": 1200,
+      "y": 900
+    },
+    {
+      "img":"player4.png",
+      "id": "blue8",
+      "x": 600,
+      "y": 100
+    },
+    {
+      "img":"player4.png",
+      "id": "blue9",
+      "x": 300,
+      "y": 100
+    },
+    {
+      "img":"player4.png",
+      "id": "blue10",
+      "x": 100,
+      "y": 900
+    },
+    {
+      "img":"player4.png",
+      "id": "blue11",
+      "x": 200,
+      "y": 200
+    },
+    {
+      "img":"target.png",
+      "id":"target",
+      "x":1600,
+      "y":450
+    }
+  ]
+}

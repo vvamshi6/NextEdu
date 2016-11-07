@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale = 1.0">
+    <link rel="stylesheet" href="style2.css" media="screen" title="no title" charset="utf-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <style media="screen">
+        #myCanvas {
+            /*z-index: -1;*/
+            /*background-image: url('footballbackground.jpg');
+            background-repeat: no-repeat;
+            -webkit-background-size: contain;
+            background-size: contain;
+            width: 100%;*/
+            background: url("BG-min.png") no-repeat center center fixed;
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+            height: 100vh;
+            background-attachment: fixed;
+            /*overflow-y: hidden;*/
+            overflow: scroll;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <center><canvas id="myCanvas" /></center>
+        <img src="tplayer4.gif" id="bluecenter" class="blueicon" alt="" />
+        <img src="tplayer4.gif" id="blue1" class="blueicon" alt="" />
+        <img src="tplayer4.gif" id="blue2" class="blueicon" alt="" />
+        <img src="tplayer4.gif" id="blue3" class="blueicon" alt="" />
+        <img src="tplayer4.gif" id="blue4" class="blueicon" alt="" />
+        <img src="tplayer4.gif" id="blue5" class="blueicon" alt="" />
+        <img src="tplayer4.gif" id="blue6" class="blueicon" alt="" />
+        <img src="tplayer5.gif" id="red1" class="redicon" alt="" />
+        <img src="tplayer5.gif" id="red2" class="redicon" alt="" />
+        <img src="tplayer5.gif" id="red3" class="redicon" alt="" />
+        <img src="tplayer5.gif" id="red4" class="redicon" alt="" />
+        <img src="tplayer5.gif" id="red5" class="redicon" alt="" />
+        <img src="tplayer5.gif" id="red6" class="redicon" alt="" />
+        <img src="tplayer5.gif" id="red7" class="redicon" alt="" />
+    </div>
+
+</body>
+<script>
+    // var canvas = document.getElementById('myCanvas');
+    // console.log(canvas);
+    // var ctx = canvas.getContext('2d');
+    // ctx.beginPath();
+    // ctx.moveTo(125, 125);
+    // ctx.lineTo(125, 45);
+    // ctx.lineTo(45, 125);
+    // ctx.closePath();
+    // ctx.stroke();
+    var needFirstPoint = true;
+
+    function drawNextLine(ctx, x, y) {
+        if (needFirstPoint) {
+            ctx.lineWidth = 5;
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            needFirstPoint = false;
+        } else {
+            ctx.lineTo(x, y);
+            ctx.stroke();
+        }
+    }
+
+    $(document).ready(function() {
+        $('#myCanvas').attr("width", screen.availWidth);
+        $('#myCanvas').attr("height", screen.availHeight);
+        var canvas = $('#myCanvas').get(0);
+        console.log(canvas);
+        if (!canvas.getContext) {
+            return;
+        }
+        var ctx = canvas.getContext('2d');
+
+        $('#myCanvas').on('click', function(e) {
+            // console.log('clicked');
+            var offset = $(this).offset();
+            var x = e.pageX - offset.left;
+            var y = e.pageY - offset.top;
+            console.log(x, y);
+            drawNextLine(ctx, x, y);
+        });
+    });
+</script>
+
+</html>

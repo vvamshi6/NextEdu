@@ -1,0 +1,88 @@
+body{
+  overflow: hidden;
+}
+.container {
+    position: relative;
+}
+
+.blueicon,.redicon{
+  position:absolute;
+}
+#bluecenter {
+    left: 800px;
+    top: 700px;
+}
+
+#blue1 {
+    left: 300px;
+    top: 500px;
+}
+
+#blue2 {
+    left: 500px;
+    top: 300px;
+}
+
+#blue3 {
+    left: 500px;
+    top: 700px;
+}
+
+#blue4 {
+    left: 700px;
+    top: 100px;
+}
+
+#blue5 {
+    left: 700px;
+    top: 600px;
+}
+
+#blue6 {
+    left: 800px;
+    top: 400px;
+}
+
+#blue7 {
+    left: 100px;
+    top: 200px;
+}
+
+#red1 {
+    right: 300px;
+    top: 500px;
+}
+
+#red2 {
+    right: 500px;
+    top: 300px;
+}
+
+#red3 {
+    right: 500px;
+    top: 700px;
+}
+
+#red4 {
+    right: 700px;
+    top: 100px;
+}
+
+#red5 {
+    right: 700px;
+    top: 600px;
+}
+
+#red6 {
+    right: 1100px;
+    top: 700px;
+}
+
+#red7 {
+    right: 900px;
+    top: 700px;
+}
+#myCanvas{
+  width:100%;
+
+}

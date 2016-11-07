@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale = 1.0">
+    <link rel="stylesheet" href="styles.css" media="screen" title="no title" charset="utf-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <div>
+
+        <!-- <form>
+          Select your favorite Colour:
+          <select>
+            <option value="blue">Blue</option>
+            <option value="red">Red</option>
+          </select>
+        </form> -->
+
+
+        <select id="colorSelect" onchange="changeColour()">
+        <option value="SelectTeam">Select Team</option>
+        <option value="blue">Blue</option>
+        <option value="red">Red</option>
+    </select>
+    </div>
+    <div class="container">
+
+        <!-- <img src="tplayer4.gif" id="bluecenter" class="blueicon" alt="" />
+        <img src="tplayer4.gif" id="blue1" class="blueicon" alt="" />
+        <img src="tplayer4.gif" id="blue2" class="blueicon" alt="" />
+        <img src="tplayer4.gif" id="blue3" class="blueicon" alt="" />
+        <img src="tplayer4.gif" id="blue4" class="blueicon" alt="" />
+        <img src="tplayer4.gif" id="blue5" class="blueicon" alt="" />
+        <img src="tplayer4.gif" id="blue6" class="blueicon" alt="" />
+        <img src="tplayer4.gif" id="blue8" class="blueicon" alt="" />
+        <img src="tplayer4.gif" id="blue9" class="blueicon" alt="" />
+        <img src="tplayer4.gif" id="blue10" class="blueicon" alt="" />
+        <img src="tplayer4.gif" id="blue11" class="blueicon" alt="" />
+
+        <img src="tplayer5.gif" id="red1" class="redicon" alt="" />
+        <img src="tplayer5.gif" id="red2" class="redicon" alt="" />
+        <img src="tplayer5.gif" id="red3" class="redicon" alt="" />
+        <img src="tplayer5.gif" id="red4" class="redicon" alt="" />
+        <img src="tplayer5.gif" id="red5" class="redicon" alt="" />
+        <img src="tplayer5.gif" id="red6" class="redicon" alt="" />
+        <img src="tplayer5.gif" id="redcenter" class="redicon" alt="" />
+        <img src="tplayer5.gif" id="red8" class="redicon" alt="" />
+        <img src="tplayer5.gif" id="red9" class="redicon" alt="" />
+        <img src="tplayer5.gif" id="red10" class="redicon" alt="" />
+        <img src="tplayer5.gif" id="red11" class="redicon" alt="" /> -->
+        <div>
+        </div>
+
+        <canvas id="myCanvas" width="578" height="400">
+
+        </canvas>
+
+    </div>
+
+</body>
+<script>
+    // var colour = document.getElementById();
+
+    $('#myCanvas').attr("width", screen.availWidth);
+    $('#myCanvas').attr("height", screen.availHeight);
+    var canvas = document.getElementById('myCanvas');
+    var context = canvas.getContext('2d');
+    var colour = document.getElementById('colorSelect').value;
+    function changeColour() {
+        colour = document.getElementById('colorSelect').value;
+        document.getElementById('colorSelect').disabled = true;
+        console.log(colour);
+        $.getJSON('data1.json', function(data) {
+            // console.log(data);
+            $.each(data, function(index, element) {
+                // console.log(index, element);
+                if (index == colour) {
+                    console.log(colour);
+                    // canvas.addEventListener('click',function(event){
+                    //   var x = event.pageX - canvas.offsetLeft;
+                    //   var y = event.pageY - canvas.offsetTop;
+                    //   console.log(x,y);
+                    //   $.each(element, function(index, element) {
+                    //     console.log(index);
+                    //   });
+                    //   })
+                    $.each(element, function(index, element) {
+                      console.log(element)
+                        var imageObj = new Image();
+                        imageObj.onload = function() {
+                            context.drawImage(imageObj, element.x, element.y,imageObj.width,imageObj.height);
+                        };
+                        imageObj.id = element.id;
+                        imageObj.src = element.img;
+                        console.log(imageObj.width,imageObj.height);
+                        canvas.addEventListener('click',function(event) {
+                          var x = event.pageX - canvas.offsetLeft,
+                            y = event.pageY - canvas.offsetTop;
+                            console.log(x, y);
+                            if (y >= element.y && y <= element.y + (imageObj.height+10) && x >= element.x && x <= element.x + (imageObj.width+18)) {
+                              alert(x);
+                              alert(y);
+                            }
+                        })
+                    });
+                }
+            });
+        });
+    }
+    console.log(colour);
+    $.getJSON('data.json', function(data) {
+        // console.log(data);
+        $.each(data, function(index, element) {
+            console.log(index, element);
+            $.each(element, function(index, element) {
+                var imageObj = new Image();
+                imageObj.onload = function() {
+                    context.drawImage(imageObj, element.x, element.y);
+                };
+                imageObj.id = element.id;
+                imageObj.src = element.img;
+            });
+        });
+    });
+    var count = 0;
+    var needFirstPoint = true;
+
+    function drawNextLine(ctx, x, y) {
+        console.log('path');
+        // if (count == 7) {
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            // ctx.beginPath();
+            // ctx.strokeStyle = "#FF0000";
+            // ctx.moveTo(x,y);
+            // ctx.closePath();
+            // ctx.stroke();
+        // } else {
+            if (needFirstPoint) {
+                ctx.strokeStyle = "#FFFF00";
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                needFirstPoint = false;
+            } else {
+                ctx.lineTo(x, y);
+                ctx.stroke();
+            }
+        // }
+    }
+
+
+    // $(document).on("click", function(e) {
+    //     var x = e.pageX + 'px';
+    //     var y = e.pageY + 'px';
+    //     // console.log(x,y);
+    //     var img = $('<img src="football.gif" alt="myimage" />');
+    //     var div = $('<div>').css({
+    //         "position": "absolute",
+    //         "left": x,
+    //         "top": y
+    //     });
+    //     div.append(img);
+    //     $(document.body).append(div);
+    //     $(this).off(e);
+    // });
+    // $(document).ready(function() {
+    //     $('#myCanvas').attr("width", screen.availWidth);
+    //     $('#myCanvas').attr("height", screen.availHeight);
+    //     var canvas = $('#myCanvas').get(0);
+    //     console.log(canvas);
+    //     if (!canvas.getContext) {
+    //         return;
+    //     }
+    //     var ctx = canvas.getContext('2d');
+    //     // var count =0;
+    //     $('#myCanvas').on('click', function(e) {
+    //         // console.log('clicked');
+    //         count = count + 1;
+    //         console.log(count);
+    //         var offset = $(this).offset();
+    //         var x = e.pageX - offset.left;
+    //         var y = e.pageY - offset.top;
+    //         console.log(x, y);
+    //         // if (count <= 7)
+    //             drawNextLine(ctx, x, y);
+    //     });
+    // });
+</script>
+
+</html>
