@@ -1,10 +1,13 @@
 body {
-    background: url('background.svg') no-repeat center center fixed;
+    /*background: url('../images/background.svg') no-repeat center center fixed;*/
     background-size: contain;
     -webkit-background-size: contain;
     overflow: hidden;
 }
-
+#myCanvas{
+  background: url('../images/background.svg') no-repeat center center fixed;
+  background-size: contain;
+}
 .container {
     position: relative;
 }

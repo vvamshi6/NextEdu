@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale = 1.0">
+    <link rel="stylesheet" href="css/styles.css" media="screen" title="no title" charset="utf-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+</head>
+
+<body>
+
+    <div>
+        <div>
+            <select id="colorSelect" onchange="changeColour()">
+          <option value="SelectTeam">Select Team</option>
+          <option value="blue">Blue</option>
+          <option value="red">Red</option>
+        </select>
+        </div>
+    </div>
+    <div class="container">
+
+        <canvas style="z-index:1" id="myCanvas" width="578" height="400"></canvas>
+
+    </div>
+
+</body>
+<script src="js/script.js">
+</script>
+
+</html>
