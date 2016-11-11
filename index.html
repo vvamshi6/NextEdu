@@ -10,18 +10,22 @@
 <body>
 
     <div>
-        <div>
-            <select id="colorSelect" onchange="changeColour()">
+        <div style = "position:relative;top:2%;">
+          <select id="colorSelect" onchange="changeColour()">
           <option value="SelectTeam">Select Team</option>
           <option value="blue">Blue</option>
           <option value="red">Red</option>
         </select>
         </div>
+        <div style = "position:fixed;top:0.5%;left:30%;">
+          Footballodometer:<input type="text" name="name" value="">
+        </div>
+        <div style = "position:fixed;top:0.5%;left:60%;">
+          Timer:<input type="text" name="name" value="">
+        </div>
     </div>
     <div class="container">
-
-        <canvas style="z-index:1" id="myCanvas" width="578" height="400"></canvas>
-
+        <canvas style="z-index:1" id="footballCanvas" width="578" height="400"></canvas>
     </div>
 
 </body>
