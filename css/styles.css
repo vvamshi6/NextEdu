@@ -4,8 +4,8 @@ body {
     -webkit-background-size: contain;
     overflow: hidden;
 }
-#footballCanvas{
-  background: url('../images/background.svg') no-repeat center center fixed;
+#footballCanvas2{
+  /*background: url('../images/background.svg') no-repeat center center fixed;*/
   background-size: contain;
 }
 .container {

@@ -1,9 +1,8 @@
-var canvas = document.getElementById('footballCanvas');
+var canvas = document.getElementById('footballCanvas2');
 var context = canvas.getContext('2d');
 var colour = document.getElementById('colorSelect').value;
 canvas.setAttribute("width", screen.availWidth);
 canvas.setAttribute("height", screen.availHeight);
-
 $.getJSON('data.json', function(data) {
     // console.log(data);
     $.each(data, function(index, element) {
@@ -80,21 +79,22 @@ function changeColour() {
                                     coords.shift();
                                 }
                             }
-
                             if (coords.length == 1 && count == 0) {
-                                var footballObj = new Image();
-                                footballObj.onload = function() {
-                                    if (element.img == "images/tplayer4.gif")
-                                        context.drawImage(footballObj, element.x + 20, element.y + 45, footballObj.width, footballObj.height);
-                                    else
-                                        context.drawImage(footballObj, element.x - 10, element.y + 30, footballObj.width, footballObj.height);
-                                }
+                              draw(coords[0].x+20,coords[0].y+20);
+                                // var footballObj = new Image();
+                                // footballObj.onload = function() {
+                                //     if (element.img == "images/tplayer4.gif")
+                                //         context.drawImage(footballObj, element.x + 20, element.y + 45, footballObj.width, footballObj.height);
+                                //     else
+                                //         context.drawImage(footballObj, element.x - 10, element.y + 30, footballObj.width, footballObj.height);
+                                // }
                                 footballObj.src = "images/football.gif";
                             }
                             if (filled.length == 5) {
                                 context.fillRect(targetObj.x, targetObj.y, imageObj.width, imageObj.height + 68);
                             }
                             if (element.y == target && coords.length > 5) {
+                                // setTimeout(function(){drawCords()}, 40);
                                 drawCords();
                             }
                         }
@@ -108,7 +108,8 @@ function changeColour() {
 function drawCords() {
     for (i in coords) {
         console.log(coords[i]);
-        drawNextLine(context, coords[i].x, coords[i].y);
+        setTimeout(drawNextLine(context, coords[i].x, coords[i].y),100000000);
+        // setTimeout(function(){drawNextLine(context, coords[i].x, coords[i].y)}, 10);
     }
 }
 console.log(colour);
@@ -158,5 +159,86 @@ function drawNextLine(ctx, x, y) {
         ctx.setLineDash([5, 15]);
         // ctx.strokeStyle = 'black';
         ctx.stroke();
+        // saveImageData();
+        console.log("imagedata");
+        draw(coords[0].x,coords[0].y);
+         setTimeout(moveObject(coords),30000);
     }
 }
+function setBackground() {
+    bgcanvas = document.getElementById('footballCanvasbg');
+    bgcontext = bgcanvas.getContext("2d");
+    bgcanvas.setAttribute('width', screen.availWidth);
+    bgcanvas.setAttribute('height', screen.availHeight);
+    bgimage = new Image();
+    bgimage.src = "images/footballbackground.jpg";
+    bgcontext.drawImage(bgimage, 0, 0, screen.availWidth, screen.availHeight);
+}
+setBackground();
+
+// function saveImageData() {
+//     var imgData = context.getImageData(0, 0, canvas.width, canvas.height);
+//     context.clearRect(0, 0, canvas.width, canvas.height);
+//     context.putImageData(imgData, 0, 0);
+// }
+document.getElementById('footballCanvas').setAttribute("width", screen.availWidth);
+document.getElementById('footballCanvas').setAttribute("height", screen.availHeight);
+var ctx2 = document.getElementById('footballCanvas').getContext('2d');
+document.getElementById('footballCanvas').setAttribute("width", screen.availWidth);
+document.getElementById('footballCanvas').setAttribute("height", screen.availHeight);
+function draw(x,y){
+  var fbimage = new Image();
+  fbimage.src = "images/football.gif";
+  ctx2.clearRect(0,0,canvas.width,canvas.height);
+  ctx2.drawImage(fbimage,x,y);
+}
+// animation variables
+      var currentX = 10;
+      var currentY = 10;
+      var frameCount = 60;
+      var timer;
+      var points;
+      var currentFrame;
+      function animate() {
+          var point = points[currentFrame++];
+          draw(point.x, point.y);
+          // refire the timer until out-of-points
+          if (currentFrame < points.length) {
+              timer = setTimeout(animate, 1000 / 60);
+          }
+      }
+      function linePoints(x1, y1, x2, y2, frames) {
+                 var dx = x2 - x1;
+                 var dy = y2 - y1;
+                 var length = Math.sqrt(dx * dx + dy * dy);
+                 var incrementX = dx / frames;
+                 var incrementY = dy / frames;
+                 var a = new Array();
+                 a.push({
+                     x: x1,
+                     y: y1
+                 });
+                 for (var frame = 0; frame < frames - 1; frame++) {
+                     a.push({
+                         x: x1 + (incrementX * frame),
+                         y: y1 + (incrementY * frame)
+                     });
+                 }
+                 a.push({
+                     x: x2,
+                     y: y2
+                 });
+                 return (a);
+             }
+        function moveObject(coords){
+          for(i =0 ;i<coords.length-1;i++)
+            (function(i) {
+              setTimeout(function() {
+                points = linePoints(coords[i].x,coords[i].y,coords[i+1].x,coords[i+1].y,frameCount);
+                currentFrame = 0;
+               coords[i].x = coords[i+1].x;
+               coords[i].y = coords[i+1].y;
+                animate();
+              }, i*1500);
+            })(i);
+          }
