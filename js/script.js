@@ -5,15 +5,18 @@
         window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
         window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'] || window[vendors[x] + 'CancelRequestAnimationFrame'];
     }
-
     if (!window.requestAnimationFrame) window.requestAnimationFrame = function(callback, element) {
         var currTime = new Date().getTime();
-        var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+        var timeToCall = Math.max(0, 18 - (currTime - lastTime));
+        var i = 0;
         var id = window.setTimeout(function() {
-                callback(currTime + timeToCall);
+                callback(currTime + timeToCall + 10000);
+                i = i + 1;
+                // callback(i * 5000);
+                console.log(i * 5500);
             },
             timeToCall);
-        lastTime = currTime + timeToCall;
+        lastTime = currTime * timeToCall;
         return id;
     };
 
@@ -66,7 +69,7 @@ function changeColour() {
                     }
                     console.log(imageObj.width, imageObj.height);
                     context.globalAlpha = 0.5;
-                    context.lineWidth =5;
+                    context.lineWidth = 5;
                     context.linecap = "round";
                     context.strokeStyle = 'yellow'; // some color/style
                     context.lineWidth = 2; // thickness
@@ -122,8 +125,15 @@ function changeColour() {
                                 console.log(coords);
                                 points1 = calcWaypoints(coords);
                                 console.log(points1);
+                                input = document.getElementById("timer");
+
+                                function start() {
+                                    add = setInterval("input.value++", 1000);
+                                }
+                                start();
                                 animateline(points1);
                                 // context.closePath();
+                                // clearInterval(add);
                                 drawCords();
                             }
                         }
@@ -134,6 +144,7 @@ function changeColour() {
     });
 }
 var waypoints;
+
 function drawCords() {
     for (i in coords) {
         console.log(coords[i]);
@@ -146,7 +157,6 @@ var target;
 var count = 0;
 var needFirstPoint = true;
 console.log(target);
-
 function storeCoordinate(xVal, yVal, array) {
     array.push({
         x: xVal,
@@ -191,6 +201,7 @@ function drawNextLine(ctx, x, y) {
         console.log("imagedata");
         // draw(coords[0].x,coords[0].y);
         //  setTimeout(moveObject(coords),30000);
+        // displaySeconds();
         moveObject(coords);
     }
 }
@@ -201,8 +212,9 @@ function setBackground() {
     bgcanvas.setAttribute('width', screen.availWidth);
     bgcanvas.setAttribute('height', screen.availHeight);
     bgimage = new Image();
-    bgimage.src = "images/footballbackground.jpg";
-    bgcontext.drawImage(bgimage, 0, 0, screen.availWidth, screen.availHeight);
+    bgimage.src = "images/background.svg";
+    // bgimage.src = "images/footballbackground.jpg";
+    bgcontext.drawImage(bgimage, 0, 0, screen.availWidth-15, screen.availHeight-100);
 }
 setBackground();
 
@@ -240,10 +252,13 @@ function animate() {
     }
 }
 
+var totaldistance = 0;
 function linePoints(x1, y1, x2, y2, frames) {
     var dx = x2 - x1;
     var dy = y2 - y1;
     var length = Math.sqrt(dx * dx + dy * dy);
+    totaldistance = totaldistance + length;
+    document.getElementById("distance").value = totaldistance;
     var incrementX = dx / frames;
     var incrementY = dy / frames;
     var a = new Array();
@@ -263,9 +278,8 @@ function linePoints(x1, y1, x2, y2, frames) {
     });
     return (a);
 }
-
 function moveObject(coords) {
-    for (i = 0; i < coords.length - 1; i++)
+    for (i = 0; i < coords.length - 1; i++) {
         (function(i) {
             setTimeout(function() {
                 points = linePoints(coords[i].x, coords[i].y, coords[i + 1].x, coords[i + 1].y, frameCount);
@@ -275,6 +289,8 @@ function moveObject(coords) {
                 animate();
             }, i * 1500);
         })(i);
+    }
+    // stopTime();
 }
 var t = 2;
 
@@ -297,36 +313,67 @@ function calcWaypoints(vertices) {
     }
     return (waypoints);
 }
-context.lineWidth = 5;
-context.strokeStyle = "blue";
+// context.lineWidth = 5;
+// context.strokeStyle = "blue";
+var add;
 var points1 = [];
+
 function animateline() {
     if (t < points1.length - 1) {
         requestAnimationFrame(animateline);
     }
-    console.log(points1);
     // draw a line segment from the last waypoint
     // to the current waypoint
-
-      // context.beginPath();
-
     context.moveTo(points1[t - 1].x, points1[t - 1].y);
     context.lineTo(points1[t].x, points1[t].y);
+    // var x1 = points1[t].x;
+    // var x2 = points1[t-1].x;
+    // var y1 = points1[t].x;
+    // var y2 = points2[t-1].y
+    // Math.sqrt( (x1-x2)*(x1-x2) + (y1-y2)*(y1-y2) );
     context.stroke();
     // increment "t" to get the next waypoint
     // t++;
     t = t + 1;
-    if(t == points1.length){
-      // alert('close');
-      closePath(points1);
+    if (t == points1.length) {
+        clearInterval(add);
+        closePath(points1);
+        finddisplacement(points1);
     }
 }
-function closePath(points1){
-  context.beginPath();
-  context.moveTo(points1[points1.length-1].x,points1[points1.length-1].y)
-  context.lineTo(points1[0].x,points1[0].y);
-  context.strokeStyle = 'black';
-  context.lineWidth = 5;
-  context.setLineDash([13,15]);
-  context.stroke();
+function closePath(points1) {
+    context.beginPath();
+    context.moveTo(points1[points1.length - 1].x, points1[points1.length - 1].y)
+    context.lineTo(points1[0].x, points1[0].y);
+    context.strokeStyle = 'black';
+    context.lineWidth = 5;
+    context.setLineDash([13, 15]);
+    context.stroke();
+}
+var secondstimer = null;
+function displaySeconds() {
+    var sec = 0;
+    var secondstimer = setInterval(function() {
+        document.getElementById("timer").value = (++sec);
+    }, 1000)
+    setTimeout(function() {
+        clearInterval(secondstimer);
+    }, 15000);
+}
+function pad(val) {
+    return val > 9 ? val : "0" + val;
+}
+function stopTime() {
+    var value = document.getElementById("timer").value;
+    clearInterval(secondstimer);
+}
+function finddisplacement(points1){
+  var x1 = points1[0].x;
+  var x2 = points1[points1.length - 1].x;
+  var y1 = points1[0].x;
+  var y2 = points1[points1.length - 1].y;
+  var dy = y2-y1;
+  var dx = x2-x1;
+  var displacement = Math.sqrt(dx*dx + dy*dy);
+  alert(displacement);
 }

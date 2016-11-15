@@ -8,7 +8,6 @@
 </head>
 
 <body>
-
     <div>
         <div style = "position:relative;top:2%;">
           <select id="colorSelect" onchange="changeColour()">
@@ -18,10 +17,10 @@
         </select>
         </div>
         <div style = "position:fixed;top:0.5%;left:30%;">
-          Footballodometer:<input type="text" name="name" value="">
+          Footballodometer:<input id = "distance" type="text" name="name" value="0">
         </div>
         <div style = "position:fixed;top:0.5%;left:60%;">
-          Timer:<input type="text" name="name" value="">
+          Timer:<input id = "timer" type="text" name="name" value="00">
         </div>
     </div>
     <div class="container">
@@ -32,5 +31,4 @@
 </body>
 <script src="js/script.js">
 </script>
-
 </html>
