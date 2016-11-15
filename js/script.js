@@ -1,3 +1,26 @@
+(function() {
+    var lastTime = 0;
+    var vendors = ['ms', 'moz', 'webkit', 'o'];
+    for (var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+        window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
+        window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'] || window[vendors[x] + 'CancelRequestAnimationFrame'];
+    }
+
+    if (!window.requestAnimationFrame) window.requestAnimationFrame = function(callback, element) {
+        var currTime = new Date().getTime();
+        var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+        var id = window.setTimeout(function() {
+                callback(currTime + timeToCall);
+            },
+            timeToCall);
+        lastTime = currTime + timeToCall;
+        return id;
+    };
+
+    if (!window.cancelAnimationFrame) window.cancelAnimationFrame = function(id) {
+        clearTimeout(id);
+    };
+}());
 var canvas = document.getElementById('footballCanvas2');
 var context = canvas.getContext('2d');
 var colour = document.getElementById('colorSelect').value;
@@ -43,7 +66,9 @@ function changeColour() {
                     }
                     console.log(imageObj.width, imageObj.height);
                     context.globalAlpha = 0.5;
-                    context.strokeStyle = '#f00'; // some color/style
+                    context.lineWidth =5;
+                    context.linecap = "round";
+                    context.strokeStyle = 'yellow'; // some color/style
                     context.lineWidth = 2; // thickness
                     context.strokeRect(0, 0, context.canvas.width, context.canvas.height);
                     canvas.addEventListener('click', function(event) {
@@ -80,21 +105,25 @@ function changeColour() {
                                 }
                             }
                             if (coords.length == 1 && count == 0) {
-                              draw(coords[0].x+20,coords[0].y+20);
                                 // var footballObj = new Image();
                                 // footballObj.onload = function() {
-                                //     if (element.img == "images/tplayer4.gif")
-                                //         context.drawImage(footballObj, element.x + 20, element.y + 45, footballObj.width, footballObj.height);
-                                //     else
-                                //         context.drawImage(footballObj, element.x - 10, element.y + 30, footballObj.width, footballObj.height);
+                                if (element.img == "images/tplayer4.gif")
+                                    draw(coords[0].x + 20, coords[0].y + 20);
+                                else
+                                    draw(coords[0].x - 20, coords[0].y + 20);
                                 // }
-                                footballObj.src = "images/football.gif";
+                                // footballObj.src = "images/football.gif";
                             }
                             if (filled.length == 5) {
                                 context.fillRect(targetObj.x, targetObj.y, imageObj.width, imageObj.height + 68);
                             }
                             if (element.y == target && coords.length > 5) {
                                 // setTimeout(function(){drawCords()}, 40);
+                                console.log(coords);
+                                points1 = calcWaypoints(coords);
+                                console.log(points1);
+                                animateline(points1);
+                                // context.closePath();
                                 drawCords();
                             }
                         }
@@ -104,12 +133,11 @@ function changeColour() {
         });
     });
 }
-
+var waypoints;
 function drawCords() {
     for (i in coords) {
         console.log(coords[i]);
-        setTimeout(drawNextLine(context, coords[i].x, coords[i].y),100000000);
-        // setTimeout(function(){drawNextLine(context, coords[i].x, coords[i].y)}, 10);
+        drawNextLine(context, coords[i].x, coords[i].y);
     }
 }
 console.log(colour);
@@ -143,28 +171,30 @@ function drawNextLine(ctx, x, y) {
     console.log('path');
     var start, end;
     if (needFirstPoint) {
-        ctx.strokeStyle = "#FFFF00";
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.moveTo(x, y);
+        // ctx.strokeStyle = "#FFFF00";
+        // ctx.lineWidth = 3;
+        // ctx.beginPath();
+        // ctx.moveTo(x, y);
         needFirstPoint = false;
     } else {
-        ctx.lineTo(x, y);
-        ctx.stroke();
+        // ctx.lineTo(x, y);
+        // ctx.stroke();
     }
     if (y == target) {
         console.log(target);
-        ctx.closePath();
-        ctx.globalCompositeOperation = "destination-over";
-        ctx.setLineDash([5, 15]);
+        // context.closePath();
+        // ctx.globalCompositeOperation = "destination-over";
+        // ctx.setLineDash([5, 15]);
         // ctx.strokeStyle = 'black';
-        ctx.stroke();
+        // ctx.stroke();
         // saveImageData();
         console.log("imagedata");
-        draw(coords[0].x,coords[0].y);
-         setTimeout(moveObject(coords),30000);
+        // draw(coords[0].x,coords[0].y);
+        //  setTimeout(moveObject(coords),30000);
+        moveObject(coords);
     }
 }
+
 function setBackground() {
     bgcanvas = document.getElementById('footballCanvasbg');
     bgcontext = bgcanvas.getContext("2d");
@@ -186,59 +216,117 @@ document.getElementById('footballCanvas').setAttribute("height", screen.availHei
 var ctx2 = document.getElementById('footballCanvas').getContext('2d');
 document.getElementById('footballCanvas').setAttribute("width", screen.availWidth);
 document.getElementById('footballCanvas').setAttribute("height", screen.availHeight);
-function draw(x,y){
-  var fbimage = new Image();
-  fbimage.src = "images/football.gif";
-  ctx2.clearRect(0,0,canvas.width,canvas.height);
-  ctx2.drawImage(fbimage,x,y);
+
+function draw(x, y) {
+    var fbimage = new Image();
+    fbimage.src = "images/football.gif";
+    ctx2.clearRect(0, 0, canvas.width, canvas.height);
+    ctx2.drawImage(fbimage, x, y);
 }
 // animation variables
-      var currentX = 10;
-      var currentY = 10;
-      var frameCount = 60;
-      var timer;
-      var points;
-      var currentFrame;
-      function animate() {
-          var point = points[currentFrame++];
-          draw(point.x, point.y);
-          // refire the timer until out-of-points
-          if (currentFrame < points.length) {
-              timer = setTimeout(animate, 1000 / 60);
-          }
-      }
-      function linePoints(x1, y1, x2, y2, frames) {
-                 var dx = x2 - x1;
-                 var dy = y2 - y1;
-                 var length = Math.sqrt(dx * dx + dy * dy);
-                 var incrementX = dx / frames;
-                 var incrementY = dy / frames;
-                 var a = new Array();
-                 a.push({
-                     x: x1,
-                     y: y1
-                 });
-                 for (var frame = 0; frame < frames - 1; frame++) {
-                     a.push({
-                         x: x1 + (incrementX * frame),
-                         y: y1 + (incrementY * frame)
-                     });
-                 }
-                 a.push({
-                     x: x2,
-                     y: y2
-                 });
-                 return (a);
-             }
-        function moveObject(coords){
-          for(i =0 ;i<coords.length-1;i++)
-            (function(i) {
-              setTimeout(function() {
-                points = linePoints(coords[i].x,coords[i].y,coords[i+1].x,coords[i+1].y,frameCount);
+var currentX = 10;
+var currentY = 10;
+var frameCount = 60;
+var timer;
+var points;
+var currentFrame;
+
+function animate() {
+    var point = points[currentFrame++];
+    draw(point.x, point.y);
+    // refire the timer until out-of-points
+    if (currentFrame < points.length) {
+        timer = setTimeout(animate, 1000 / 60);
+    }
+}
+
+function linePoints(x1, y1, x2, y2, frames) {
+    var dx = x2 - x1;
+    var dy = y2 - y1;
+    var length = Math.sqrt(dx * dx + dy * dy);
+    var incrementX = dx / frames;
+    var incrementY = dy / frames;
+    var a = new Array();
+    a.push({
+        x: x1,
+        y: y1
+    });
+    for (var frame = 0; frame < frames - 1; frame++) {
+        a.push({
+            x: x1 + (incrementX * frame),
+            y: y1 + (incrementY * frame)
+        });
+    }
+    a.push({
+        x: x2,
+        y: y2
+    });
+    return (a);
+}
+
+function moveObject(coords) {
+    for (i = 0; i < coords.length - 1; i++)
+        (function(i) {
+            setTimeout(function() {
+                points = linePoints(coords[i].x, coords[i].y, coords[i + 1].x, coords[i + 1].y, frameCount);
                 currentFrame = 0;
-               coords[i].x = coords[i+1].x;
-               coords[i].y = coords[i+1].y;
+                coords[i].x = coords[i + 1].x;
+                coords[i].y = coords[i + 1].y;
                 animate();
-              }, i*1500);
-            })(i);
-          }
+            }, i * 1500);
+        })(i);
+}
+var t = 2;
+
+function calcWaypoints(vertices) {
+    // vertices[length] = vertices[0];
+    var waypoints = [];
+    for (var i = 1; i < vertices.length; i++) {
+        var pt0 = vertices[i - 1];
+        var pt1 = vertices[i];
+        var dx = pt1.x - pt0.x;
+        var dy = pt1.y - pt0.y;
+        for (var j = 0; j < 100; j++) {
+            var x = pt0.x + dx * j / 100;
+            var y = pt0.y + dy * j / 100;
+            waypoints.push({
+                x: x,
+                y: y
+            });
+        }
+    }
+    return (waypoints);
+}
+context.lineWidth = 5;
+context.strokeStyle = "blue";
+var points1 = [];
+function animateline() {
+    if (t < points1.length - 1) {
+        requestAnimationFrame(animateline);
+    }
+    console.log(points1);
+    // draw a line segment from the last waypoint
+    // to the current waypoint
+
+      // context.beginPath();
+
+    context.moveTo(points1[t - 1].x, points1[t - 1].y);
+    context.lineTo(points1[t].x, points1[t].y);
+    context.stroke();
+    // increment "t" to get the next waypoint
+    // t++;
+    t = t + 1;
+    if(t == points1.length){
+      // alert('close');
+      closePath(points1);
+    }
+}
+function closePath(points1){
+  context.beginPath();
+  context.moveTo(points1[points1.length-1].x,points1[points1.length-1].y)
+  context.lineTo(points1[0].x,points1[0].y);
+  context.strokeStyle = 'black';
+  context.lineWidth = 5;
+  context.setLineDash([13,15]);
+  context.stroke();
+}
