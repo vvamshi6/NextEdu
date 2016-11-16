@@ -11,7 +11,12 @@ body {
 .container {
     position: relative;
 }
-
+#Questionbox{
+  display: none;
+  position:fixed;
+  left:10;
+  top:500;
+}
 .blueicon, .redicon {
     position: absolute;
     /*z-index: -1;*/

@@ -1,51 +1,38 @@
-(function() {
-    var lastTime = 0;
-    var vendors = ['ms', 'moz', 'webkit', 'o'];
-    for (var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
-        window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
-        window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'] || window[vendors[x] + 'CancelRequestAnimationFrame'];
-    }
-    if (!window.requestAnimationFrame) window.requestAnimationFrame = function(callback, element) {
-        var currTime = new Date().getTime();
-        var timeToCall = Math.max(0, 18 - (currTime - lastTime));
-        var i = 0;
-        var id = window.setTimeout(function() {
-                callback(currTime + timeToCall + 10000);
-                i = i + 1;
-                // callback(i * 5000);
-                console.log(i * 5500);
-            },
-            timeToCall);
-        lastTime = currTime * timeToCall;
-        return id;
-    };
-
-    if (!window.cancelAnimationFrame) window.cancelAnimationFrame = function(id) {
-        clearTimeout(id);
-    };
-}());
+window.requestAnimFrame = (function(callback) {
+    return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
+        function(callback) {
+            window.setTimeout(callback, 3000 / 60);
+        };
+})();
 var canvas = document.getElementById('footballCanvas2');
 var context = canvas.getContext('2d');
 var colour = document.getElementById('colorSelect').value;
 canvas.setAttribute("width", screen.availWidth);
 canvas.setAttribute("height", screen.availHeight);
-$.getJSON('data.json', function(data) {
-    // console.log(data);
-    $.each(data, function(index, element) {
-        console.log(index, element);
-        $.each(element, function(index, element) {
-            var imageObj = new Image();
-            imageObj.onload = function() {
-                context.drawImage(imageObj, element.x, element.y);
-            };
-            imageObj.id = element.id;
-            imageObj.src = element.img;
+
+function readJson() {
+    $.getJSON('data.json', function(data) {
+        // console.log(data);
+        $.each(data, function(index, element) {
+            console.log(index, element);
+            $.each(element, function(index, element) {
+                var imageObj = new Image();
+                imageObj.onload = function() {
+                    context.drawImage(imageObj, element.x, element.y);
+                };
+                imageObj.id = element.id;
+                imageObj.src = element.img;
+            });
         });
     });
-});
+}
+readJson();
+setBackground();
+var colour;
 
 function changeColour() {
     colour = document.getElementById('colorSelect').value;
+    console.log(colour);
     document.getElementById('colorSelect').disabled = true;
     console.log(colour);
     $.getJSON('data1.json', function(data) {
@@ -90,8 +77,6 @@ function changeColour() {
                                 }
                                 var index;
                                 if ((filled.length < 6) && filled.indexOf(targetObj.x) != -1) {
-                                    // alert('target is there');
-                                    // alert(filled.indexOf(targetObj.x));
                                     var index = filled.indexOf(targetObj.x);
                                     filled.splice(index, 1);
                                     console.log(filled);
@@ -132,6 +117,7 @@ function changeColour() {
                                 }
                                 start();
                                 animateline(points1);
+                                animateball();
                                 // context.closePath();
                                 // clearInterval(add);
                                 drawCords();
@@ -143,12 +129,13 @@ function changeColour() {
         });
     });
 }
+
 var waypoints;
 
 function drawCords() {
     for (i in coords) {
         console.log(coords[i]);
-        drawNextLine(context, coords[i].x, coords[i].y);
+        // drawNextLine(context, coords[i].x, coords[i].y);
     }
 }
 console.log(colour);
@@ -157,6 +144,7 @@ var target;
 var count = 0;
 var needFirstPoint = true;
 console.log(target);
+
 function storeCoordinate(xVal, yVal, array) {
     array.push({
         x: xVal,
@@ -177,35 +165,6 @@ function storeFilledPositon(xVal, array) {
 var filled = []
 console.log(filled);
 
-function drawNextLine(ctx, x, y) {
-    console.log('path');
-    var start, end;
-    if (needFirstPoint) {
-        // ctx.strokeStyle = "#FFFF00";
-        // ctx.lineWidth = 3;
-        // ctx.beginPath();
-        // ctx.moveTo(x, y);
-        needFirstPoint = false;
-    } else {
-        // ctx.lineTo(x, y);
-        // ctx.stroke();
-    }
-    if (y == target) {
-        console.log(target);
-        // context.closePath();
-        // ctx.globalCompositeOperation = "destination-over";
-        // ctx.setLineDash([5, 15]);
-        // ctx.strokeStyle = 'black';
-        // ctx.stroke();
-        // saveImageData();
-        console.log("imagedata");
-        // draw(coords[0].x,coords[0].y);
-        //  setTimeout(moveObject(coords),30000);
-        // displaySeconds();
-        moveObject(coords);
-    }
-}
-
 function setBackground() {
     bgcanvas = document.getElementById('footballCanvasbg');
     bgcontext = bgcanvas.getContext("2d");
@@ -214,15 +173,8 @@ function setBackground() {
     bgimage = new Image();
     bgimage.src = "images/background.svg";
     // bgimage.src = "images/footballbackground.jpg";
-    bgcontext.drawImage(bgimage, 0, 0, screen.availWidth-15, screen.availHeight-100);
+    bgcontext.drawImage(bgimage, 0, 0, screen.availWidth - 15, screen.availHeight - 100);
 }
-setBackground();
-
-// function saveImageData() {
-//     var imgData = context.getImageData(0, 0, canvas.width, canvas.height);
-//     context.clearRect(0, 0, canvas.width, canvas.height);
-//     context.putImageData(imgData, 0, 0);
-// }
 document.getElementById('footballCanvas').setAttribute("width", screen.availWidth);
 document.getElementById('footballCanvas').setAttribute("height", screen.availHeight);
 var ctx2 = document.getElementById('footballCanvas').getContext('2d');
@@ -235,63 +187,8 @@ function draw(x, y) {
     ctx2.clearRect(0, 0, canvas.width, canvas.height);
     ctx2.drawImage(fbimage, x, y);
 }
-// animation variables
-var currentX = 10;
-var currentY = 10;
-var frameCount = 60;
-var timer;
-var points;
-var currentFrame;
+// var points;
 
-function animate() {
-    var point = points[currentFrame++];
-    draw(point.x, point.y);
-    // refire the timer until out-of-points
-    if (currentFrame < points.length) {
-        timer = setTimeout(animate, 1000 / 60);
-    }
-}
-
-var totaldistance = 0;
-function linePoints(x1, y1, x2, y2, frames) {
-    var dx = x2 - x1;
-    var dy = y2 - y1;
-    var length = Math.sqrt(dx * dx + dy * dy);
-    totaldistance = totaldistance + length;
-    document.getElementById("distance").value = totaldistance;
-    var incrementX = dx / frames;
-    var incrementY = dy / frames;
-    var a = new Array();
-    a.push({
-        x: x1,
-        y: y1
-    });
-    for (var frame = 0; frame < frames - 1; frame++) {
-        a.push({
-            x: x1 + (incrementX * frame),
-            y: y1 + (incrementY * frame)
-        });
-    }
-    a.push({
-        x: x2,
-        y: y2
-    });
-    return (a);
-}
-function moveObject(coords) {
-    for (i = 0; i < coords.length - 1; i++) {
-        (function(i) {
-            setTimeout(function() {
-                points = linePoints(coords[i].x, coords[i].y, coords[i + 1].x, coords[i + 1].y, frameCount);
-                currentFrame = 0;
-                coords[i].x = coords[i + 1].x;
-                coords[i].y = coords[i + 1].y;
-                animate();
-            }, i * 1500);
-        })(i);
-    }
-    // stopTime();
-}
 var t = 2;
 
 function calcWaypoints(vertices) {
@@ -313,24 +210,25 @@ function calcWaypoints(vertices) {
     }
     return (waypoints);
 }
-// context.lineWidth = 5;
-// context.strokeStyle = "blue";
 var add;
 var points1 = [];
+var totaldistance = 0;
 
 function animateline() {
     if (t < points1.length - 1) {
-        requestAnimationFrame(animateline);
+        requestAnimFrame(animateline);
     }
     // draw a line segment from the last waypoint
     // to the current waypoint
     context.moveTo(points1[t - 1].x, points1[t - 1].y);
     context.lineTo(points1[t].x, points1[t].y);
-    // var x1 = points1[t].x;
-    // var x2 = points1[t-1].x;
-    // var y1 = points1[t].x;
-    // var y2 = points2[t-1].y
-    // Math.sqrt( (x1-x2)*(x1-x2) + (y1-y2)*(y1-y2) );
+    var x1 = points1[t].x;
+    var x2 = points1[t - 1].x;
+    var y1 = points1[t].y;
+    var y2 = points1[t - 1].y
+    var distance = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+    totaldistance = distance + totaldistance;
+    document.getElementById('distance').value = totaldistance;
     context.stroke();
     // increment "t" to get the next waypoint
     // t++;
@@ -341,6 +239,18 @@ function animateline() {
         finddisplacement(points1);
     }
 }
+var fbimage = new Image();
+fbimage.src = "images/football.gif";
+
+function animateball() {
+    if (t < points1.length - 1) {
+        requestAnimFrame(animateball);
+    }
+    ctx2.clearRect(0, 0, canvas.width, canvas.height);
+    ctx2.drawImage(fbimage, points1[t - 1].x, points1[t - 1].y);
+
+}
+
 function closePath(points1) {
     context.beginPath();
     context.moveTo(points1[points1.length - 1].x, points1[points1.length - 1].y)
@@ -350,30 +260,44 @@ function closePath(points1) {
     context.setLineDash([13, 15]);
     context.stroke();
 }
-var secondstimer = null;
-function displaySeconds() {
-    var sec = 0;
-    var secondstimer = setInterval(function() {
-        document.getElementById("timer").value = (++sec);
-    }, 1000)
-    setTimeout(function() {
-        clearInterval(secondstimer);
-    }, 15000);
+
+function finddisplacement(points1) {
+    var x1 = points1[0].x;
+    var x2 = points1[points1.length - 1].x;
+    var y1 = points1[0].x;
+    var y2 = points1[points1.length - 1].y;
+    var dy = y2 - y1;
+    var dx = x2 - x1;
+    var displacement = Math.sqrt(dx * dx + dy * dy);
+    drawLabel(context, displacement, points1[0], points1[points1.length - 1], 'center', 10);
+    // alert(displacement);
+    document.getElementById('Questionbox').style.display = 'block';
 }
-function pad(val) {
-    return val > 9 ? val : "0" + val;
-}
-function stopTime() {
-    var value = document.getElementById("timer").value;
-    clearInterval(secondstimer);
-}
-function finddisplacement(points1){
-  var x1 = points1[0].x;
-  var x2 = points1[points1.length - 1].x;
-  var y1 = points1[0].x;
-  var y2 = points1[points1.length - 1].y;
-  var dy = y2-y1;
-  var dx = x2-x1;
-  var displacement = Math.sqrt(dx*dx + dy*dy);
-  alert(displacement);
+
+function drawLabel(ctx, text, p1, p2, alignment, padding) {
+    if (!alignment) alignment = 'center';
+    if (!padding) padding = 0;
+    if (colour == 'red') {
+        var x = p1;
+        p1 = p2;
+        p2 = x;
+    }
+    var dx = p2.x - p1.x;
+    var dy = p2.y - p1.y;
+    var p, pad;
+    if (alignment == 'center') {
+        p = p1;
+        pad = 1 / 2;
+    } else {
+        var left = alignment == 'left';
+        p = left ? p1 : p2;
+        pad = padding / Math.sqrt(dx * dx + dy * dy) * (left ? 1 : -1);
+    }
+    ctx.save();
+    ctx.font = 'italic 20pt Calibri';
+    ctx.textAlign = alignment;
+    ctx.translate(p.x + dx * pad, p.y + dy * pad);
+    ctx.rotate(Math.atan2(dy, dx));
+    ctx.fillText(text, 0, 0);
+    ctx.restore();
 }
